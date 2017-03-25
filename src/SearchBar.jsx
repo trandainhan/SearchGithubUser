@@ -1,40 +1,38 @@
 import React from 'react';
+import {observer} from "mobx-react";
+import {observable} from "mobx";
 
-var SearchBar = React.createClass({
+@observer class SearchBar extends React.Component {
+
+  @observable searchKey = ''
+
+  constructor(props) {
+    super(props);
+    this.handleSearch = this.handleSearch.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
   
-  propTypes: {
-    onSearch: React.PropTypes.func
-  },
+  handleSearch() {
+    this.props.onSearch(this.searchKey);
+  }
 
-  getInitialState: function() {
-    return {
-      searchKey: ''
-    }
-  },
+  handleChange(e) {
+    this.searchKey = e.target.value;
+  }
 
-  handleSearch: function() {
-    this.props.onSearch(this.state.searchKey);
-  },
-
-  handleChange: function(e) {
-    this.setState({
-      searchKey: e.target.value
-    });
-  },
-
-  handleKeyPress: function(e) {
+  handleKeyPress(e) {
     if (e.key === 'Enter') {
       this.handleSearch();
     }
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     // focus to search box when starting app
     this.refs.searchBox.focus();
-  },
+  }
 
-  render: function() {
-    var props = this.props;
+  render() {
     return (
       <div className="row search-bar">
         <div className="col-md-9">
@@ -42,7 +40,7 @@ var SearchBar = React.createClass({
             ref="searchBox"
             placeholder="Search..."
             className="form-control" 
-            value={this.state.searchKey} 
+            value={this.searchKey} 
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
             >
@@ -59,6 +57,10 @@ var SearchBar = React.createClass({
       </div>
     )
   }
-});
+}
+
+SearchBar.propTypes = {
+  onSearch: React.PropTypes.func
+}
 
 export default SearchBar;

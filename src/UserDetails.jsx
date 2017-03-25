@@ -1,5 +1,9 @@
-var UserDetails = function (props) {
-  
+import React from 'react';
+import {observer} from "mobx-react";
+import KeyValue from './KeyValue.jsx';
+import Repos from './Repos.jsx';
+
+var UserDetails = observer(props => {
   var user = props.user;
   return (
     <div className="user-detail">
@@ -33,7 +37,8 @@ var UserDetails = function (props) {
       <Repos url={user.repos_url} />
     </div>
   )
-}
+})
+
 UserDetails.propTypes = {
   user: React.PropTypes.object.isRequired
 }

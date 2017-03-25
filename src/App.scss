@@ -1,0 +1,84 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: white;
+  color: black;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1em;
+}
+
+img {
+  max-height: 100%;
+  max-width: 100%;
+  float: left;
+  margin-right: 10px;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+}
+
+.search-bar {
+  margin-bottom: 30px;
+}
+
+.simple-user {
+  p {
+    font-size: 18px;
+    line-height: 50px;
+  }
+  
+  width: 25%;
+  height: 50px;
+  margin-bottom: 10px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.user-detail {
+  position: relative;
+  .back-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .user-detail-info {
+    margin-bottom: 10px;
+  }
+}

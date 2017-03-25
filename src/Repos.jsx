@@ -1,29 +1,24 @@
 import React from 'react';
+import {observer} from 'mobx-react';
+import {observable} from 'mobx';
+import Repo from './Repo.js';
+import KeyValue from './KeyValue.jsx';
+import $ from 'jquery';
 
-var Repos = React.createClass({
+@observer class Repos extends React.Component {
+
+  @observable repos = []
   
-  propTypes: {
-    url: React.PropTypes.string.isRequired
-  },
-  
-  getInitialState: function () {
-    return {
-      repos: []
-    }
-  },
-  
-  componentDidMount: function () {
+  componentDidMount() {
     $.get(this.props.url, function(data) {
       var repos = data.map(function(item) {
         return new Repo(item);
       });
-      this.setState({
-        repos: repos
-      })
+      this.repos = repos;
     }.bind(this))
-  },
+  }
   
-  render: function () {
+  render() {
     return (
       <div>
         <h2>Repositories:</h2>
@@ -32,7 +27,7 @@ var Repos = React.createClass({
           <div className="col-md-5">Repo's Url</div>
         </div>
         {
-          this.state.repos.map(function (repo) {
+          this.repos.map(function (repo) {
             return (
               <KeyValue key={repo.id} dataKey={repo.name} value={repo.url} />
             )
@@ -41,6 +36,10 @@ var Repos = React.createClass({
       </div>
     )
   }
-})
+}
 
+Repos.propTypes = {
+  url: React.PropTypes.string.isRequired
+}
+ 
 export default Repos;
