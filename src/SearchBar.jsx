@@ -1,6 +1,7 @@
 import React from 'react';
 import {observer} from "mobx-react";
 import {observable} from "mobx";
+import { Button, FormControl } from 'react-bootstrap';
 
 @observer class SearchBar extends React.Component {
 
@@ -29,30 +30,23 @@ import {observable} from "mobx";
 
   componentDidMount() {
     // focus to search box when starting app
-    this.refs.searchBox.focus();
+    this.searchBox.focus();
   }
 
   render() {
     return (
       <div className="row search-bar">
         <div className="col-md-9">
-          <input
-            ref="searchBox"
+          <FormControl
+            inputRef={ref => {this.searchBox = ref; }}
             placeholder="Search..."
-            className="form-control" 
             value={this.searchKey} 
             onChange={this.handleChange}
             onKeyPress={this.handleKeyPress}
-            >
-          </input>
+          />
         </div>
-        <div className="col-md-3">
-          <button
-            className="btn btn-default" 
-            type="button"
-            onClick={this.handleSearch}>
-            Search
-          </button>
+        <div className="col-md-3 btn-search">
+          <Button bsStyle="primary" onClick={this.handleSearch}>Search</Button>
         </div>
       </div>
     )

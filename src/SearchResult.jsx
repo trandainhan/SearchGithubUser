@@ -13,8 +13,8 @@ var SearchResult = observer(props => {
             <SimpleUser 
               key={user.id} 
               user={user} 
-              onSelect={props.onSelectUser.bind(null, user)} 
-              />
+              onSelect={props.onSelectUser.bind(null, user)}
+            />
           )
         })
       }
@@ -26,4 +26,4 @@ SearchResult.propTypes = {
   users: PropTypes.observableArray.isRequired
 }
 
-export default SearchResult
+export default SearchResult;

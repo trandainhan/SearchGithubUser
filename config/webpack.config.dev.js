@@ -7,6 +7,12 @@ var WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeMod
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var getClientEnvironment = require('./env');
 var paths = require('./paths');
+var node_dir = __dirname + '/node_modules';
+
+const extractSass = new ExtractTextPlugin({
+    filename: "bundle.css"
+    // disable: process.env.NODE_ENV === "development"
+});
 
 
 
@@ -45,7 +51,7 @@ module.exports = {
     // We ship a few polyfills by default:
     require.resolve('./polyfills'),
     // Finally, this is your app's code:
-    paths.appIndexJs
+    paths.appIndexJs,
     // We include the app code last so that if there is a runtime error during
     // initialization, it doesn't blow up the WebpackDevServer client, and
     // changing JS code would still trigger a refresh.
@@ -68,30 +74,33 @@ module.exports = {
     // We use `fallback` instead of `root` because we want `node_modules` to "win"
     // if there any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
-    fallback: paths.nodePaths,
+    // fallback: paths.nodePaths, ----
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
     // https://github.com/facebookincubator/create-react-app/issues/290
-    extensions: ['.js', '.json', '.jsx', ''],
+    extensions: ['.js', '.json', '.jsx', '*'], // what the hell is this
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web'
-    }
+    },
+    modules: [paths.appNodeModules]
   },
   
   module: {
-    // First, run the linter.
-    // It's important to do this before Babel processes the JS.
-    preLoaders: [
+    rules: [
+      // First, run the linter.
+      // It's important to do this before Babel processes the JS.
       {
+        enforce: 'pre',
         test: /\.(js|jsx)$/,
-        loader: 'eslint',
+        exclude: /node_modules/,
+        use: [
+          { loader: "eslint-loader" }
+        ],
         include: paths.appSrc,
-      }
-    ],
-    loaders: [
+      },
       // Default loader: load all assets that are not handled
       // by other loaders with the url loader.
       // Note: This list needs to be updated with every change of extensions
@@ -114,24 +123,24 @@ module.exports = {
           /\.json$/,
           /\.svg$/
         ],
-        loader: 'url',
-        query: {
-          limit: 10000,
-          name: 'static/media/[name].[hash:8].[ext]'
-        }
+        use: [
+          { loader: 'url-loader',
+            options: {
+              query: {
+                limit: 10000,
+                name: 'static/media/[name].[hash:8].[ext]'
+              }
+            }
+          }
+        ]
       },
       // Process JS with Babel.
       {
         test: /\.(js|jsx)$/,
         include: paths.appSrc,
-        loader: 'babel',
-        query: {
-          
-          // This is a feature of `babel-loader` for webpack (not Babel itself).
-          // It enables caching results in ./node_modules/.cache/babel-loader/
-          // directory for faster rebuilds.
-          cacheDirectory: true
-        }
+        use: [{
+          loader: 'babel-loader'
+        }]
       },
       // "postcss" loader applies autoprefixer to our CSS.
       // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -140,53 +149,46 @@ module.exports = {
       // in development "style" loader enables hot editing of CSS.
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('css!sass')
-      },
-      // JSON is not enabled by default in Webpack but both Node and Browserify
-      // allow it implicitly so we also enable it.
-      {
-        test: /\.json$/,
-        loader: 'json'
+        use: extractSass.extract({
+                use: [
+                  {
+                    loader: "css-loader"
+                  },
+                  {
+                    loader: "postcss-loader",
+                    options: {
+                      // We use PostCSS for autoprefixing only.
+                      plugins: function () {
+                        return [
+                          require('precss'),
+                          require('autoprefixer')
+                        ];
+                      }
+                    }
+                  },
+                  {
+                    loader: "sass-loader"
+                  },
+                ],
+                // use style-loader in development
+                fallback: "style-loader"
+            })
       },
       // "file" loader for svg
       {
         test: /\.svg$/,
-        loader: 'file',
-        query: {
-          name: 'static/media/[name].[hash:8].[ext]'
-        }
-      },
-      {
-        test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, 
-        loader: 'url?limit=10000&mimetype=application/font-woff'
-      },
-      {
-        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, 
-        loader: 'url?limit=10000&mimetype=application/octet-stream'
-      },
-      {
-        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, 
-        loader: 'file'
-      },
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, 
-        loader: 'url?limit=10000&mimetype=image/svg+xml'
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              query: {
+                name: 'static/media/[name].[hash:8].[ext]'
+              }  
+            }
+          }
+        ]
       }
     ]
-  },
-  
-  // We use PostCSS for autoprefixing only.
-  postcss: function() {
-    return [
-      autoprefixer({
-        browsers: [
-          '>1%',
-          'last 4 versions',
-          'Firefox ESR',
-          'not ie < 9', // React doesn't support IE8 anyway
-        ]
-      }),
-    ];
   },
   plugins: [
     // Makes the public URL available as %PUBLIC_URL% in index.html, e.g.:
@@ -217,9 +219,15 @@ module.exports = {
 
     new webpack.ProvidePlugin({
       $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      "window.jQuery": "jquery"
     }),
-    new ExtractTextPlugin('dist/styles/main.css', { allChunks: true })
+    extractSass,
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      filename: 'commons.js',
+      minChunks: 2,
+    })
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

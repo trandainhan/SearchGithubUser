@@ -5,8 +5,7 @@ import SearchBar from './SearchBar';
 import SearchResult from './SearchResult';
 import UserDetails from './UserDetails';
 import User from './User';
-
-// import $ from 'jquery';
+import Loader from './share/components/Loader';
 
 @observer class Search extends React.Component {
 
@@ -14,6 +13,7 @@ import User from './User';
   @observable users = []
   @observable isShowDetailPage = false
   @observable selectedUser = {}
+  @observable isLoaded = true
 
   constructor(props) {
     super(props);
@@ -31,16 +31,19 @@ import User from './User';
     if (this.searchKey === value) return;
     this.searchKey = value; // caching search key
     this.req && window.clearTimeout(this.req);
+    this.users = []; // Reset all current users
     this.req = window.setTimeout(this.callApi(value), 500);
   }
 
   callApi(value) {
+    this.isLoaded = false;
     $.get("https://api.github.com/search/users?q=" + value, function(data) {
       var items = data.items;
       var users = items.map(function(item) {
         return new User(item);
       });
-      this.users = users
+      this.users = users;
+      this.isLoaded = true;
     }.bind(this))
   }
   
@@ -62,7 +65,9 @@ import User from './User';
     return (
       <div>
         <SearchBar onSearch={this.handleSearch} />
-        <SearchResult users={this.users} onSelectUser={this.handleSelectUser} />
+        <Loader loaded={this.isLoaded}>
+          <SearchResult users={this.users} onSelectUser={this.handleSelectUser} />  
+        </Loader>
       </div>
     )
   }

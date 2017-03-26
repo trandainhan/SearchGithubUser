@@ -3,7 +3,6 @@ import {observer} from 'mobx-react';
 import {observable} from 'mobx';
 import Repo from './Repo.js';
 import KeyValue from './KeyValue.jsx';
-import $ from 'jquery';
 
 @observer class Repos extends React.Component {
 

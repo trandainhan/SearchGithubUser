@@ -1,7 +1,6 @@
+import "bootstrap-sass/assets/stylesheets/_bootstrap.scss";
 import './App.scss';
-import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import React, { Component } from 'react';
-// import logo from './logo.svg';
 import Search from './Search';
 
 class App extends Component {
