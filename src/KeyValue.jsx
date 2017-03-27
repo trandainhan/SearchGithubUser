@@ -13,7 +13,7 @@ var KeyValue = observer(props => {
 
 KeyValue.propTypes = {
   dataKey: React.PropTypes.string.isRequired,
-  value: React.PropTypes.string.isRequired
+  value: React.PropTypes.any.isRequired
 }
 
 export default KeyValue;

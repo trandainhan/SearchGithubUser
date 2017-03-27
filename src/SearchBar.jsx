@@ -1,57 +1,44 @@
 import React from 'react';
 import {observer} from "mobx-react";
-import {observable} from "mobx";
 import { Button, FormControl } from 'react-bootstrap';
+import { compose, withState, withHandlers, mapProps } from 'recompose';
+import { flow, get } from 'lodash/fp';
 
-@observer class SearchBar extends React.Component {
 
-  @observable searchKey = ''
-
-  constructor(props) {
-    super(props);
-    this.handleSearch = this.handleSearch.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-  }
-  
-  handleSearch() {
-    this.props.onSearch(this.searchKey);
-  }
-
-  handleChange(e) {
-    this.searchKey = e.target.value;
-  }
-
-  handleKeyPress(e) {
-    if (e.key === 'Enter') {
-      this.handleSearch();
+const enhancer = compose(
+  withState('searchKey', 'setSearchKey', ''),
+  withHandlers({
+    handleSearch: props => () => {
+      props.onSearch(props.searchKey);
+    },
+    handleKeyPress: props => (e) => {
+      if (e.key === 'Enter') {
+        props.onSearch(props.searchKey);
+      }
     }
-  }
+  }),
+  mapProps(({setSearchKey, ...others}) => ({
+    ...others,
+    setSearchKey: flow(get('target.value'), setSearchKey)
+  })),
+  observer
+)
 
-  componentDidMount() {
-    // focus to search box when starting app
-    this.searchBox.focus();
-  }
-
-  render() {
-    return (
-      <div className="row search-bar">
-        <div className="col-md-9">
-          <FormControl
-            inputRef={ref => {this.searchBox = ref; }}
-            placeholder="Search..."
-            value={this.searchKey} 
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-          />
-        </div>
-        <div className="col-md-3 btn-search">
-          <Button bsStyle="primary" onClick={this.handleSearch}>Search</Button>
-        </div>
-      </div>
-    )
-  }
-}
+var SearchBar = enhancer(({searchKey, setSearchKey, handleSearch, handleKeyPress}) => (
+  <div className="row search-bar">
+    <div className="col-md-9">
+      <FormControl
+        placeholder="Search..."
+        value={searchKey}
+        onChange={setSearchKey}
+        onKeyPress={handleKeyPress}
+      />
+    </div>
+    <div className="col-md-3 btn-search">
+      <Button bsStyle="primary" onClick={handleSearch}>Search</Button>
+    </div>
+  </div>
+))
 
 SearchBar.propTypes = {
   onSearch: React.PropTypes.func
