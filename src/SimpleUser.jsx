@@ -1,10 +1,10 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 
-var SimpleUser = observer(({user, onSelect}) => (
-	<div className="simple-user" onClick={onSelect}>
+var SimpleUser = observer(({user, onSelect, onChange}) => (
+	<div className="simple-user" onClick={onSelect} >
 	  <img role="presentation" src={user.avatar_url} />
-	  <p>{user.login}</p>
+		<p>{user.login}</p>
 	</div>
 ))
 

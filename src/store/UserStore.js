@@ -1,19 +1,33 @@
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
 import User from '../User';
+import fetch from 'axios';
+
+const URL = 'https://api.github.com/search/users?q=';
 
 class UserStore {
-	constructor() {
-		@observable users = [];
+
+	@observable users = []
+	@observable selectedUser = {}
+
+	constructor(data) {
+		data = data || {}
+		this.users = data.users || [];
+		this.selectedUser = data.selectedUser || {};
 	}
 
-	fetchUser(searchKey) {
-		return $.get("https://api.github.com/search/users?q=" + value, function(data) {
-	      var items = data.items;
-	      var users = items.map(function(item) {
-	        return new User(item);
-	      });
-	      this.users = users;
-	    }.bind(this))
+	@action fetchUser(searchKey) {
+		return fetch.get(URL + searchKey).then(({data}) => {
+			const items = data.items;
+			const users = items.map(item => {
+				return new User(item)
+			});
+			this.users.replace(users);
+			return items;
+		});
+	}
+
+	setSelectedUser(user) {
+		this.selectedUser = user
 	}
 }
 
