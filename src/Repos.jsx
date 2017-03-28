@@ -1,44 +1,42 @@
 import React from 'react';
-import {observer} from 'mobx-react';
-import {observable} from 'mobx';
-import Repo from './Repo.js';
+import { observer } from 'mobx-react';
 import KeyValue from './KeyValue.jsx';
+import { compose, withProps, lifecycle, mapProps, setPropTypes } from 'recompose';
+import ReposStore from './store/ReposStore';
 
-@observer class Repos extends React.Component {
+const enhancer = compose(
+  setPropTypes({
+    url: React.PropTypes.string.isRequired
+  }),
+  withProps(() => ({
+    store: new ReposStore()
+  })),
+  lifecycle({
+    componentDidMount() {
+      this.props.store.fetchRepo(this.props.url)
+    }
+  }),
+  mapProps(({store}) => ({
+    repos: store.repos
+  })),
+  observer
+)
 
-  @observable repos = []
-  
-  componentDidMount() {
-    $.get(this.props.url, function(data) {
-      var repos = data.map(function(item) {
-        return new Repo(item);
-      });
-      this.repos = repos;
-    }.bind(this))
-  }
-  
-  render() {
-    return (
-      <div>
-        <h2>Repositories:</h2>
-        <div className="row">
-          <div className="col-md-3">Repo's name</div>
-          <div className="col-md-5">Repo's Url</div>
-        </div>
-        {
-          this.repos.map(function (repo) {
-            return (
-              <KeyValue key={repo.id} dataKey={repo.name} value={repo.url} />
-            )
-          })
-        }
-      </div>
-    )
-  }
-}
+const Repos = ({repos}) => (
+  <div>
+    <h2>Repositories:</h2>
+    <div className="row">
+      <div className="col-md-3">Repo's name</div>
+      <div className="col-md-5">Repo's Url</div>
+    </div>
+    {
+      repos.map(function (repo) {
+        return (
+          <KeyValue key={repo.id} dataKey={repo.name} value={repo.url} />
+        )
+      })
+    }
+  </div>
+)
 
-Repos.propTypes = {
-  url: React.PropTypes.string.isRequired
-}
- 
-export default Repos;
+export default enhancer(Repos);
