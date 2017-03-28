@@ -7,10 +7,10 @@ import Search from './Search';
 const App = () => (
   <div className="App">
     <div className="App-header">
-      <h2>Welcome to React</h2>
+      <h1>Welcome to React</h1>
     </div>
     <div className="container">
-      <h1 className="title">Search github user</h1>
+      <h1 className="title">Github User Seaching...</h1>
       <Search />
     </div>
     <DevTools />
