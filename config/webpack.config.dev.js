@@ -32,7 +32,7 @@ var env = getClientEnvironment(publicUrl);
 module.exports = {
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
@@ -87,7 +87,7 @@ module.exports = {
     },
     modules: [paths.appNodeModules]
   },
-  
+
   module: {
     rules: [
       // First, run the linter.
@@ -183,12 +183,17 @@ module.exports = {
             options: {
               query: {
                 name: 'static/media/[name].[hash:8].[ext]'
-              }  
+              }
             }
           }
         ]
       }
     ]
+  },
+  externals: {
+    'react/addons': true,
+    'react/lib/ExecutionEnvironment': true,
+    'react/lib/ReactContext': true
   },
   plugins: [
     // Makes the public URL available as %PUBLIC_URL% in index.html, e.g.:
@@ -223,11 +228,11 @@ module.exports = {
       "window.jQuery": "jquery"
     }),
     extractSass,
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'commons',
-      filename: 'commons.js',
-      minChunks: 2,
-    })
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'commons',
+    //   filename: 'commons.js',
+    //   minChunks: 2,
+    // })
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
