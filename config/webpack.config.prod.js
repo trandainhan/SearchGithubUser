@@ -8,8 +8,6 @@ var url = require('url');
 var paths = require('./paths');
 var getClientEnvironment = require('./env');
 
-
-
 function ensureSlash(path, needsSlash) {
   var hasSlash = path.endsWith('/');
   if (hasSlash && !needsSlash) {
@@ -44,6 +42,10 @@ if (env['process.env'].NODE_ENV !== '"production"') {
   throw new Error('Production builds must have NODE_ENV=production.');
 }
 
+const extractSass = new ExtractTextPlugin({
+    filename: "bundle.css"
+});
+
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
@@ -75,30 +77,32 @@ module.exports = {
     // We use `fallback` instead of `root` because we want `node_modules` to "win"
     // if there any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
-    fallback: paths.nodePaths,
+    // fallback: paths.nodePaths,
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
     // https://github.com/facebookincubator/create-react-app/issues/290
-    extensions: ['.js', '.json', '.jsx', ''],
+    extensions: ['.js', '.json', '.jsx', '*'],
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web'
-    }
+    },
+    modules: [paths.appNodeModules]
   },
-  
   module: {
-    // First, run the linter.
-    // It's important to do this before Babel processes the JS.
-    preLoaders: [
+    rules: [
+      // First, run the linter.
+      // It's important to do this before Babel processes the JS.
       {
+        enforce: 'pre',
         test: /\.(js|jsx)$/,
-        loader: 'eslint',
-        include: paths.appSrc
-      }
-    ],
-    loaders: [
+        exclude: /node_modules/,
+        use: [
+          { loader: "eslint-loader" }
+        ],
+        include: paths.appSrc,
+      },
       // Default loader: load all assets that are not handled
       // by other loaders with the url loader.
       // Note: This list needs to be updated with every change of extensions
@@ -107,10 +111,12 @@ module.exports = {
       // we need to add the supported extension to this loader too.
       // Add one new line in `exclude` for each loader.
       //
-      // "file" loader makes sure those assets end up in the `build` folder.
-      // When you `import` an asset, you get its filename.
-      // "url" loader works just like "file" loader but it also embeds
-      // assets smaller than specified size as data URLs to avoid requests.
+      // "file" loader makes sure those assets get served by WebpackDevServer.
+      // When you `import` an asset, you get its (virtual) filename.
+      // In production, they would get copied to the `build` folder.
+      // "url" loader works like "file" loader except that it embeds assets
+      // smaller than specified limit in bytes as data URLs to avoid requests.
+      // A missing `test` is equivalent to a match.
       {
         exclude: [
           /\.html$/,
@@ -119,65 +125,72 @@ module.exports = {
           /\.json$/,
           /\.svg$/
         ],
-        loader: 'url',
-        query: {
-          limit: 10000,
-          name: 'static/media/[name].[hash:8].[ext]'
-        }
+        use: [
+          { loader: 'url-loader',
+            options: {
+              query: {
+                limit: 10000,
+                name: 'static/media/[name].[hash:8].[ext]'
+              }
+            }
+          }
+        ]
       },
       // Process JS with Babel.
       {
         test: /\.(js|jsx)$/,
         include: paths.appSrc,
-        loader: 'babel',
-        
+        use: [{
+          loader: 'babel-loader'
+        }]
       },
-      // The notation here is somewhat confusing.
       // "postcss" loader applies autoprefixer to our CSS.
       // "css" loader resolves paths in CSS and adds assets as dependencies.
-      // "style" loader normally turns CSS into JS modules injecting <style>,
-      // but unlike in development configuration, we do something different.
-      // `ExtractTextPlugin` first applies the "postcss" and "css" loaders
-      // (second argument), then grabs the result CSS and puts it into a
-      // separate file in our build process. This way we actually ship
-      // a single CSS file in production instead of JS code injecting <style>
-      // tags. If you use code splitting, however, any async bundles will still
-      // use the "style" loader inside the async code so CSS from them won't be
-      // in the main CSS file.
+      // "style" loader turns CSS into JS modules that inject <style> tags.
+      // In production, we use a plugin to extract that CSS to a file, but
+      // in development "style" loader enables hot editing of CSS.
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?importLoaders=1!postcss')
-        // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
-      },
-      // JSON is not enabled by default in Webpack but both Node and Browserify
-      // allow it implicitly so we also enable it.
-      {
-        test: /\.json$/,
-        loader: 'json'
+        test: /\.scss$/,
+        use: extractSass.extract({
+                use: [
+                  {
+                    loader: "css-loader"
+                  },
+                  {
+                    loader: "postcss-loader",
+                    options: {
+                      // We use PostCSS for autoprefixing only.
+                      plugins: function () {
+                        return [
+                          require('precss'),
+                          require('autoprefixer')
+                        ];
+                      }
+                    }
+                  },
+                  {
+                    loader: "sass-loader"
+                  },
+                ],
+                // use style-loader in development
+                fallback: "style-loader"
+            })
       },
       // "file" loader for svg
       {
         test: /\.svg$/,
-        loader: 'file',
-        query: {
-          name: 'static/media/[name].[hash:8].[ext]'
-        }
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              query: {
+                name: 'static/media/[name].[hash:8].[ext]'
+              }
+            }
+          }
+        ]
       }
     ]
-  },
-  
-  // We use PostCSS for autoprefixing only.
-  postcss: function() {
-    return [
-      autoprefixer({
-        browsers: [
-          '>1%',
-          'last 4 versions',
-          'Firefox ESR',
-          'not ie < 9', // React doesn't support IE8 anyway
-        ]
-      }),
-    ];
   },
   plugins: [
     // Makes the public URL available as %PUBLIC_URL% in index.html, e.g.:
@@ -228,13 +241,19 @@ module.exports = {
       }
     }),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
-    new ExtractTextPlugin('static/css/[name].[contenthash:8].css'),
+    // new ExtractTextPlugin('static/css/[name].[contenthash:8].css'),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json'
-    })
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      "window.jQuery": "jquery"
+    }),
+    extractSass
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

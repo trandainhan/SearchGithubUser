@@ -11,10 +11,7 @@ var node_dir = __dirname + '/node_modules';
 
 const extractSass = new ExtractTextPlugin({
     filename: "bundle.css"
-    // disable: process.env.NODE_ENV === "development"
 });
-
-
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -64,7 +61,7 @@ module.exports = {
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
-    filename: 'static/js/bundle.js',
+    filename: 'static/js/[id].bundle.js',
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath
   },
@@ -79,7 +76,7 @@ module.exports = {
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
     // https://github.com/facebookincubator/create-react-app/issues/290
-    extensions: ['.js', '.json', '.jsx', '*'], // what the hell is this
+    extensions: ['.js', '.json', '.jsx', '*'],
     alias: {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -228,11 +225,11 @@ module.exports = {
       "window.jQuery": "jquery"
     }),
     extractSass,
-    // new webpack.optimize.CommonsChunkPlugin({
-    //   name: 'commons',
-    //   filename: 'commons.js',
-    //   minChunks: 2,
-    // })
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      filename: 'commons.js',
+      minChunks: 2,
+    })
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
