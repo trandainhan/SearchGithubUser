@@ -2,37 +2,53 @@ import React from 'react';
 import { connect } from 'react-redux';
 import SearchBar from './SearchBar';
 import SearchResult from '../components/SearchResult';
-// import UserDetails from './UserDetails';
+import UserDetails from '../components/UserDetails';
 import Loader from '../../share/components/Loader';
+import { compose, withState, withHandlers } from 'recompose';
+import { selectUser } from '../actions/index';
 
 const Search = ({
   isFetching,
-  // handleSelectUser,
+  showDetailPage,
+  handleSelectUser,
   users,
-  // selectedUser
+  selectedUser,
+  backToSearchView
 }) => {
-  // if (showDetailPage) {
-  //   return <UserDetails user={selectedUser} onBack={backToSearchView} />
-  // }
+  if (showDetailPage) {
+    return <UserDetails user={selectedUser} onBack={backToSearchView} />
+  }
   return (
     <div>
       <SearchBar />
       <Loader loaded={!isFetching}>
-        <SearchResult users={users} onSelectUser={() => ({})} />
+        <SearchResult users={users} onSelectUser={handleSelectUser} />
       </Loader>
     </div>
   )
 }
 
 const mapStateToProps = state => {
-  const { isFetching, users } = state
+  const { isFetching, users, selectedUser } = state
   return {
     isFetching: isFetching,
     users: users,
-    selectedUser: {},
+    selectedUser: selectedUser
   }
 }
 
-const enhancer = connect(mapStateToProps)
+const enhancer = compose(
+  connect(mapStateToProps),
+  withState('showDetailPage', 'setShowDetailPage', false),
+  withHandlers({
+    backToSearchView: props => () => {
+      props.setShowDetailPage(false)
+    },
+    handleSelectUser: props => (user) => {
+      props.setShowDetailPage(true)
+      props.dispatch(selectUser(user))
+    }
+  })
+)
 
 export default enhancer(Search);

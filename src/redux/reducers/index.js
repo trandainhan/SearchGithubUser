@@ -1,9 +1,17 @@
-import { CHANGE_SEARCH_KEY, REQUEST_USER, RECEIVED_USER } from '../actions/index';
+import {
+  CHANGE_SEARCH_KEY,
+  REQUEST_USER,
+  RECEIVED_USER,
+  SELECT_USER,
+  RECEIVED_REPOS
+} from '../actions/index';
 
 const rootReducer = (state = {
   searchKey: '',
   isFetching: false,
-  users: []
+  users: [],
+  selectedUser: {},
+  selectedRepos: []
 }, action) => {
   switch (action.type) {
     case CHANGE_SEARCH_KEY:
@@ -21,6 +29,16 @@ const rootReducer = (state = {
         ...state,
         isFetching: false,
         users: action.users
+      }
+    case SELECT_USER:
+      return {
+        ...state,
+        selectedUser: action.user
+      }
+    case RECEIVED_REPOS:
+      return {
+        ...state,
+        selectedRepos: action.repos
       }
     default:
       return state

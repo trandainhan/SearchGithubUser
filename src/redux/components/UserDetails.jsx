@@ -1,6 +1,6 @@
 import React from 'react';
 import KeyValue from './KeyValue';
-import Repos from './Repos';
+import Repos from '../containers/Repos';
 
 var UserDetails = ({user, onBack}) => (
   <div className="user-detail">
