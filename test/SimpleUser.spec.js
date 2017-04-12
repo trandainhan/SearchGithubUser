@@ -2,7 +2,7 @@ import React from 'react';
 import { expect } from 'chai';
 import { shallow } from 'enzyme';
 import sinon from 'sinon';
-import SimpleUser from '../src/SimpleUser.jsx';
+import SimpleUser from '../src/mobx/SimpleUser.jsx';
 
 describe('SimpleUser', () => {
 

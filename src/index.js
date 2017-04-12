@@ -1,8 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import store from './redux/index';
+import { Provider } from 'react-redux';
 
+// For Redux
 ReactDOM.render(
-  <App />,
+  <Provider store={store}>
+    <App />
+  </Provider>,
   document.getElementById('root')
 );
+
+
+// For Mobx
+// ReactDOM.render(
+//   <App />
+//   document.getElementById('root')
+// );

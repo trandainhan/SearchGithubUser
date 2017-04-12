@@ -3,7 +3,7 @@ import {observer} from "mobx-react";
 import SearchBar from './SearchBar';
 import SearchResult from './SearchResult';
 import UserDetails from './UserDetails';
-import Loader from './share/components/Loader';
+import Loader from '../share/components/Loader';
 import {
   compose, withHandlers, withState, withProps, onlyUpdateForKeys, mapProps
 } from 'recompose';

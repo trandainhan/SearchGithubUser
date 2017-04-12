@@ -1,8 +1,8 @@
 import 'bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import './App.scss';
 import React from 'react';
-import DevTools from 'mobx-react-devtools';
-import Search from './mobx/Search';
+// import DevTools from 'mobx-react-devtools';
+import Search from './redux/containers/Search';
 
 const App = () => (
   <div className="App">
@@ -13,7 +13,6 @@ const App = () => (
       <h1 className="title">Github User Seaching...</h1>
       <Search />
     </div>
-    <DevTools />
   </div>
 )
 

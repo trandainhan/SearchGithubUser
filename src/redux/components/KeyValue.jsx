@@ -1,7 +1,6 @@
 import React from 'react';
-import {observer} from 'mobx-react';
 
-var KeyValue = observer((dataKey, value) => {
+var KeyValue = ({dataKey, value}) => {
   if (!dataKey && !value) return;
   return (
     <div className="row">
@@ -9,7 +8,7 @@ var KeyValue = observer((dataKey, value) => {
       <div className="col-md-5">{value}</div>
     </div>
   )
-})
+}
 
 KeyValue.propTypes = {
   dataKey: React.PropTypes.string.isRequired,

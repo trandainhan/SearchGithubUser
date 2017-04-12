@@ -1,0 +1,20 @@
+import React from 'react';
+import SimpleUser from './SimpleUser.jsx';
+
+var SearchResult = ({users, onSelectUser}) => (
+  <div>
+    {
+      users && users.map(function (user) {
+        return (
+          <SimpleUser
+            key={user.id}
+            user={user}
+            onSelect={onSelectUser.bind(null, user)}
+          />
+        )
+      })
+    }
+  </div>
+)
+
+export default SearchResult;
