@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import { Button, FormControl } from 'react-bootstrap';
 import { changeSearchKey, fetchUser } from '../actions/index';
 
-const SearchBar = ({searchKey, handleChange, handleSearch, testProps}) => (
+const SearchBar = ({searchKey, handleChange, handleSearch, handleKeyPress}) => (
   <div className="row search-bar">
-    <p>{testProps}</p>
     <div className="col-md-9">
       <FormControl
         placeholder="Search..."
         value={searchKey}
         onChange={handleChange}
+        onKeyPress={handleKeyPress}
       />
     </div>
     <div className="col-md-3 btn-search">
@@ -24,14 +24,15 @@ SearchBar.propTypes = {
 }
 
 const mapStateToProps = state => {
-  const { searchKey } = state
+  const { searchKey, isFetching } = state
   return {
-    searchKey: searchKey
+    searchKey,
+    isFetching
   }
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { searchKey } = stateProps
+  const { searchKey, isFetching } = stateProps
   const { dispatch } = dispatchProps
   return {
     searchKey,
@@ -40,6 +41,11 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
     handleSearch: () => {
       dispatch(fetchUser(searchKey))
+    },
+    handleKeyPress: (e) => {
+      if (e.key === 'Enter') {
+        !isFetching && dispatch(fetchUser(searchKey))
+      }
     },
     ...ownProps
   }
