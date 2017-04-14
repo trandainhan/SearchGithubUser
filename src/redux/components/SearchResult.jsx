@@ -9,7 +9,7 @@ var SearchResult = ({users, onSelectUser}) => (
           <SimpleUser
             key={user.id}
             user={user}
-            onSelect={onSelectUser.bind(null, user)}
+            onSelect={onSelectUser}
           />
         )
       })

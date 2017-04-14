@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import { withHandlers } from 'recompose'
 
 var SimpleUser = ({user, onSelect}) => (
 	<div className="simple-user" onClick={onSelect} >
@@ -12,4 +13,10 @@ SimpleUser.propTypes = {
   onSelect: React.PropTypes.func
 }
 
-export default SimpleUser;
+const enhancer = withHandlers({
+	onSelect: props => () => {
+		props.onSelect(props.user)
+	}
+})
+
+export default enhancer(SimpleUser)
