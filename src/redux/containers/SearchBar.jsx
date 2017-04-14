@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Button, FormControl } from 'react-bootstrap';
-import { changeSearchKey, fetchUser } from '../actions/index';
+import { changeSearchKey, fetchUser } from '../actions';
 
 const SearchBar = ({searchKey, handleChange, handleSearch, handleKeyPress}) => (
   <div className="row search-bar">

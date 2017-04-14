@@ -4,7 +4,7 @@ import {
   RECEIVED_USER,
   SELECT_USER,
   RECEIVED_REPOS
-} from '../actions/index';
+} from '../actions';
 
 const rootReducer = (state = {
   searchKey: '',

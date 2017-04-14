@@ -5,7 +5,7 @@ import SearchResult from '../components/SearchResult';
 import UserDetails from '../components/UserDetails';
 import Loader from '../../share/components/Loader';
 import { compose, withState, withHandlers } from 'recompose';
-import { selectUser } from '../actions/index';
+import { selectUser } from '../actions';
 
 const Search = ({
   isFetching,

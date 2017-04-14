@@ -2,7 +2,7 @@ import React from 'react'
 import KeyValue from '../components/KeyValue'
 import { connect } from 'react-redux'
 import { lifecycle, setPropTypes, compose } from 'recompose'
-import { fetchRepos } from '../actions/index'
+import { fetchRepos } from '../actions'
 
 const Repos = ({repos}) => (
   <div>

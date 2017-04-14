@@ -1,5 +1,5 @@
 import React from 'react';
-import SimpleUser from './SimpleUser.jsx';
+import SimpleUser from './SimpleUser';
 
 var SearchResult = ({users, onSelectUser}) => (
   <div>
