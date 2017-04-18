@@ -1,5 +1,9 @@
-import 'bootstrap-sass/assets/stylesheets/_bootstrap.scss';
-import './App.scss';
+if (process.env.BROWSER) {
+  require('bootstrap-sass/assets/stylesheets/_bootstrap.scss');
+  require('./App.scss');
+}
+// import 'bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+// import './App.scss';
 import React from 'react';
 // import DevTools from 'mobx-react-devtools';
 import Search from './redux/containers/Search';

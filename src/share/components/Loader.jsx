@@ -1,4 +1,7 @@
-import "./Loader.scss";
+if (process.env.BROWSER) {
+  require('./Loader.scss');
+}
+// import './Loader.scss';
 import React from 'react';
 import ReactLoader from 'react-loader';
 

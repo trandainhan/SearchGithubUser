@@ -15,7 +15,7 @@ const extractSass = new ExtractTextPlugin({
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
-var publicPath = '/';
+var publicPath = '';
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
@@ -47,6 +47,7 @@ module.exports = {
     require.resolve('react-dev-utils/webpackHotDevClient'),
     // We ship a few polyfills by default:
     require.resolve('./polyfills'),
+    'webpack-hot-middleware/client?path=http://localhost:4000/__webpack_hmr',
     // Finally, this is your app's code:
     paths.appIndexJs,
     // We include the app code last so that if there is a runtime error during
@@ -61,7 +62,7 @@ module.exports = {
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
-    filename: 'static/js/[id].bundle.js',
+    filename: 'bundle.js',
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath
   },
@@ -165,7 +166,7 @@ module.exports = {
                   },
                   {
                     loader: "sass-loader"
-                  },
+                  }
                 ],
                 // use style-loader in development
                 fallback: "style-loader"
@@ -206,7 +207,12 @@ module.exports = {
     }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
-    new webpack.DefinePlugin(env),
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: JSON.stringify("development"),
+        BROWSER: JSON.stringify(true)
+      }
+    }),
     // This is necessary to emit hot updates (currently CSS only):
     new webpack.HotModuleReplacementPlugin(),
     // Watcher doesn't work well if you mistype casing in a path so we use
@@ -225,11 +231,11 @@ module.exports = {
       "window.jQuery": "jquery"
     }),
     extractSass,
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'commons',
-      filename: 'commons.js',
-      minChunks: 2,
-    })
+    // new webpack.optimize.CommonsChunkPlugin({
+    //   name: 'commons',
+    //   filename: 'commons.js',
+    //   minChunks: 2,
+    // })
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
