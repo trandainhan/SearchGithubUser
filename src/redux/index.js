@@ -6,7 +6,7 @@ import rootReducer from './reducers';
 const loggerMiddleware = createLogger();
 
 const middleWare = [thunkMiddleware]
-if (process.env.NODE_ENV != 'production') {
+if (process.env.NODE_ENV !== 'production') {
   middleWare.push(loggerMiddleware);
 }
 
