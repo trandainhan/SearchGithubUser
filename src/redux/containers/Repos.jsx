@@ -12,7 +12,7 @@ const Repos = ({repos}) => (
       <div className="col-md-5">Repo's Url</div>
     </div>
     {
-      repos.map(function (repo) {
+      repos && repos.map(function (repo) {
         return (
           <KeyValue key={repo.id} dataKey={repo.name} value={repo.url} />
         )

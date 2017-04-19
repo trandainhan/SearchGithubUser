@@ -2,10 +2,7 @@ if (process.env.BROWSER) {
   require('bootstrap-sass/assets/stylesheets/_bootstrap.scss');
   require('./App.scss');
 }
-// import 'bootstrap-sass/assets/stylesheets/_bootstrap.scss';
-// import './App.scss';
 import React from 'react';
-// import DevTools from 'mobx-react-devtools';
 import Search from './redux/containers/Search';
 
 const App = () => (
@@ -14,6 +11,7 @@ const App = () => (
       <h1>React Playground</h1>
       <h2>ES6 - React - Redux - Mobx - Recompose</h2>
       <h2>Webpack2 - Enzyme - Mocha - SinonChai - Karma </h2>
+      <h2>Server rendering </h2>
     </div>
     <div className="container">
       <h1 className="title">Github User Seaching...</h1>
